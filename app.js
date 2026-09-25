@@ -145,6 +145,9 @@ calcRouteBtn.addEventListener('click', () => {
             L.latLng(startPlace.lat, startPlace.lng),
             L.latLng(endPlace.lat, endPlace.lng)
         ],
+        router: L.Routing.osrmv1({
+            serviceUrl: 'https://routing.openstreetmap.de/routed-car/route/v1'
+        }),
         lineOptions: {
             styles: [{color: 'blue', opacity: 0.7, weight: 5}]
         },
