@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetici Paneli - Ladik Rehberi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Ladik Rehberi Yönetimi</div>
+        <div class="nav-links">
+            <a href="index.html">Haritaya Dön</a>
+        </div>
+    </nav>
+
+    <div class="container" id="loginContainer">
+        <div class="login-box">
+            <h2>Yönetici Girişi</h2>
+            <input type="password" id="adminPassword" placeholder="Yönetici Şifresi">
+            <button id="loginBtn" class="primary-btn">Giriş Yap</button>
+            <p id="loginError" class="error-msg"></p>
+        </div>
+    </div>
+
+    <div class="container" id="adminPanel" style="display: none;">
+        <div class="admin-content">
+            <h2>Yerleşim Yeri Bilgisi Ekle/Düzenle</h2>
+            <div class="input-group">
+                <label>Yerleşim Yeri Adı</label>
+                <input type="text" id="placeName" placeholder="Örn: Şehreküstü">
+            </div>
+            <div class="input-group">
+                <label>Enlem (Latitude)</label>
+                <input type="text" id="placeLat" placeholder="Örn: 40.9130">
+            </div>
+            <div class="input-group">
+                <label>Boylam (Longitude)</label>
+                <input type="text" id="placeLng" placeholder="Örn: 35.8920">
+            </div>
+            <div class="input-group">
+                <label>Detaylı Bilgi</label>
+                <textarea id="placeInfo" rows="4" placeholder="Bu köy/mahalle hakkında detaylı bilgiler..."></textarea>
+            </div>
+            <button id="savePlaceBtn" class="primary-btn">Kaydet</button>
+
+            <hr class="divider">
+            
+            <h2>Kayıtlı Yerler</h2>
+            <ul id="placesList" class="places-list"></ul>
+            
+            <hr class="divider">
+            <h2>Veri Yönetimi (Not Defteri)</h2>
+            <p>Bilgileri bilgisayarınıza not defteri (.txt) dosyası olarak indirebilir veya geri yükleyebilirsiniz.</p>
+            <button id="exportBtn" class="secondary-btn">Bilgileri İndir (İçe Aktarılabilir)</button>
+            <input type="file" id="importFile" accept=".txt, .json" style="display:none">
+            <button id="importBtn" class="info-btn" onclick="document.getElementById('importFile').click()">Bilgileri Yükle</button>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
