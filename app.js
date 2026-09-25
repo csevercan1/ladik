@@ -1,10 +1,10 @@
 // Initialize Map
 const map = L.map('map').setView([40.9167, 35.8833], 13); // Centered on Ladik, Samsun
 
-// Add OpenStreetMap tiles via CartoDB (prevents block issue)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+// Add OpenStreetMap tiles
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
 // Data Management
