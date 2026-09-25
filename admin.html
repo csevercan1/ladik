@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yönetici Paneli - Ladik Rehberi</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Leaflet CSS for admin map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <nav class="navbar">
@@ -23,41 +25,70 @@
         </div>
     </div>
 
-    <div class="container" id="adminPanel" style="display: none;">
-        <div class="admin-content">
-            <h2>Yerleşim Yeri Bilgisi Ekle/Düzenle</h2>
+    <div class="container" id="adminPanel" style="display: none; flex-direction: row;">
+        <div class="sidebar" style="width: 400px; flex-shrink: 0;">
+            <h2>Yerleşim Yeri Düzenle</h2>
+            <input type="hidden" id="placeId">
             <div class="input-group">
                 <label>Yerleşim Yeri Adı</label>
-                <input type="text" id="placeName" placeholder="Örn: Şehreküstü">
+                <input type="text" id="placeName">
             </div>
             <div class="input-group">
                 <label>Enlem (Latitude)</label>
-                <input type="text" id="placeLat" placeholder="Örn: 40.9130">
+                <input type="text" id="placeLat">
             </div>
             <div class="input-group">
                 <label>Boylam (Longitude)</label>
-                <input type="text" id="placeLng" placeholder="Örn: 35.8920">
+                <input type="text" id="placeLng">
             </div>
             <div class="input-group">
                 <label>Detaylı Bilgi</label>
-                <textarea id="placeInfo" rows="4" placeholder="Bu köy/mahalle hakkında detaylı bilgiler..."></textarea>
+                <textarea id="placeInfo" rows="4"></textarea>
             </div>
-            <button id="savePlaceBtn" class="primary-btn">Kaydet</button>
+            <button id="savePlaceBtn" class="primary-btn">Güncelle / Kaydet</button>
 
             <hr class="divider">
-            
-            <h2>Kayıtlı Yerler</h2>
-            <ul id="placesList" class="places-list"></ul>
-            
+
+            <h2>Eski Yol (Kırmızı) Ekleme</h2>
+            <p style="margin-bottom:10px; font-size:0.9rem;">Başlangıç ve varış noktalarını seçin. Ardından haritada tıklayarak yolu çizin ve kaydedin.</p>
+            <div class="input-group">
+                <label>Başlangıç</label>
+                <select id="startPoint"><option value="">Seçiniz...</option></select>
+            </div>
+            <div class="input-group">
+                <label>Varış</label>
+                <select id="endPoint"><option value="">Seçiniz...</option></select>
+            </div>
+            <div class="input-group">
+                <label>Yol Bilgisi (Tarihi vb.)</label>
+                <textarea id="routeInfo" rows="3" placeholder="Bu yol hakkında tarihi/detaylı bilgi..."></textarea>
+            </div>
+            <button id="drawOldRouteBtn" class="secondary-btn">Eski Yolu Çizmeye Başla</button>
+            <button id="saveOldRouteBtn" class="primary-btn" style="display:none;">Çizimi Bitir ve Kaydet</button>
+            <button id="deleteOldRouteBtn" class="delete-btn" style="width:100%; margin-top:5px; margin-bottom:15px;">Seçili İki Yer Arasındaki Yolu Sil</button>
+
             <hr class="divider">
             <h2>Veri Yönetimi (Not Defteri)</h2>
-            <p>Bilgileri bilgisayarınıza not defteri (.txt) dosyası olarak indirebilir veya geri yükleyebilirsiniz.</p>
-            <button id="exportBtn" class="secondary-btn">Bilgileri İndir (İçe Aktarılabilir)</button>
+            <button id="exportBtn" class="secondary-btn">Bilgileri İndir (.txt)</button>
             <input type="file" id="importFile" accept=".txt, .json" style="display:none">
             <button id="importBtn" class="info-btn" onclick="document.getElementById('importFile').click()">Bilgileri Yükle</button>
         </div>
+        
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Harita -->
+            <div id="adminMap" class="map-container" style="height: 400px;"></div>
+            
+            <!-- Liste -->
+            <div style="flex: 1; background: var(--card-bg); padding: 1rem; border-radius: var(--border-radius); overflow-y: auto; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <h2>Kayıtlı Yerler</h2>
+                <ul id="placesList" class="places-list"></ul>
+            </div>
+        </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="data.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

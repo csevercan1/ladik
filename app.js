@@ -11,15 +11,12 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let places = [];
 let markers = [];
 let routingControl = null;
-let customRoutePoints = [];
-let customRouteLine = null;
-let isDrawingMode = false;
+let savedOldRouteLine = null;
 
 const startSelect = document.getElementById('startPoint');
 const endSelect = document.getElementById('endPoint');
 const detailBtn = document.getElementById('detailBtn');
 const calcRouteBtn = document.getElementById('calcRouteBtn');
-const drawOldRouteBtn = document.getElementById('drawOldRouteBtn');
 const resultsPanel = document.getElementById('resultsPanel');
 const newDistanceEl = document.getElementById('newDistance');
 const oldDistanceEl = document.getElementById('oldDistance');
@@ -46,19 +43,8 @@ function showModal(title, content) {
     modal.style.display = "flex";
 }
 
-function loadData() {
-    const data = localStorage.getItem('ladik_places');
-    if (data) {
-        places = JSON.parse(data);
-    } else {
-        // Default Data
-        places = [
-            { id: 1, name: "Şehreküstü", lat: 40.9080, lng: 35.8950, info: "Şehreküstü mahallesi Ladik'in eski yerleşim yerlerinden biridir." },
-            { id: 2, name: "Kızılsini", lat: 40.8920, lng: 35.8420, info: "Kızılsini köyü tarım ve hayvancılıkla geçinen şirin bir köydür." }
-        ];
-        localStorage.setItem('ladik_places', JSON.stringify(places));
-    }
-    
+function initApp() {
+    places = getPlaces();
     populateDropdowns();
     addMarkers();
 }
@@ -82,7 +68,6 @@ function populateDropdowns() {
 }
 
 function addMarkers() {
-    // Clear old markers
     markers.forEach(m => map.removeLayer(m));
     markers = [];
     
@@ -90,7 +75,6 @@ function addMarkers() {
         const marker = L.marker([place.lat, place.lng]).addTo(map);
         marker.bindTooltip(place.name, { permanent: false, direction: 'top' });
         
-        // Show detailed info on click
         marker.on('click', () => {
             showModal(place.name, `<p>${place.info}</p>`);
         });
@@ -108,22 +92,44 @@ detailBtn.addEventListener('click', () => {
         alert("Lütfen başlangıç ve varış noktalarını seçin.");
         return;
     }
+
+    if (startId === endId) {
+        alert("Başlangıç ve varış noktaları birbirinden farklı olmalıdır.");
+        return;
+    }
     
     const startPlace = places.find(p => p.id === startId);
     const endPlace = places.find(p => p.id === endId);
     
+    // Check if an old route exists between these points
+    const allRoutes = getRoutes();
+    const oldRouteData = allRoutes.find(r => 
+        (r.startId === startId && r.endId === endId) || 
+        (r.startId === endId && r.endId === startId)
+    );
+
+    let routeInfoHtml = "";
+    if (oldRouteData && oldRouteData.info) {
+        routeInfoHtml = `
+            <hr style="margin: 15px 0; border: 0; border-top: 2px dashed var(--primary-color);">
+            <h3 style="color: var(--secondary-color);">Eski Yol Bilgisi (Kırmızı Rota)</h3>
+            <p><i>${oldRouteData.info}</i></p>
+        `;
+    }
+
     let content = `
         <h3>${startPlace.name}</h3>
         <p>${startPlace.info}</p>
         <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">
         <h3>${endPlace.name}</h3>
         <p>${endPlace.info}</p>
+        ${routeInfoHtml}
     `;
     
     showModal("Seçili Yerlerin Bilgisi", content);
 });
 
-// Calculate New Route (Blue)
+// Calculate New Route (Blue) and Show Old Route (Red)
 calcRouteBtn.addEventListener('click', () => {
     const startId = parseInt(startSelect.value);
     const endId = parseInt(endSelect.value);
@@ -132,10 +138,16 @@ calcRouteBtn.addEventListener('click', () => {
         alert("Lütfen başlangıç ve varış noktalarını seçin.");
         return;
     }
+
+    if (startId === endId) {
+        alert("Lütfen iki FARKLI yerleşim yeri seçin.");
+        return;
+    }
     
     const startPlace = places.find(p => p.id === startId);
     const endPlace = places.find(p => p.id === endId);
     
+    // 1. OSRM Yeni Yol (Mavi)
     if (routingControl) {
         map.removeControl(routingControl);
     }
@@ -153,7 +165,7 @@ calcRouteBtn.addEventListener('click', () => {
         },
         routeWhileDragging: false,
         addWaypoints: false,
-        show: false // Hide the step-by-step panel
+        show: false
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
@@ -164,63 +176,39 @@ calcRouteBtn.addEventListener('click', () => {
         resultsPanel.style.display = 'block';
         newDistanceEl.textContent = distanceKm;
     });
-});
 
-// Draw Old Route (Red)
-drawOldRouteBtn.addEventListener('click', () => {
-    isDrawingMode = !isDrawingMode;
-    
-    if (isDrawingMode) {
-        drawOldRouteBtn.textContent = "Çizimi Bitir ve Hesapla";
-        drawOldRouteBtn.classList.replace("secondary-btn", "primary-btn");
-        customRoutePoints = [];
-        
-        if (customRouteLine) {
-            map.removeLayer(customRouteLine);
-            customRouteLine = null;
+    // 2. Kayıtlı Eski Yolu (Kırmızı) Göster
+    if (savedOldRouteLine) {
+        map.removeLayer(savedOldRouteLine);
+        savedOldRouteLine = null;
+        oldDistanceEl.textContent = "Bulunamadı";
+    }
+
+    const allRoutes = getRoutes();
+    const oldRouteData = allRoutes.find(r => 
+        (r.startId === startId && r.endId === endId) || 
+        (r.startId === endId && r.endId === startId)
+    );
+
+    if (oldRouteData && oldRouteData.points.length > 0) {
+        const latlngs = oldRouteData.points.map(p => L.latLng(p.lat, p.lng));
+        savedOldRouteLine = L.polyline(latlngs, {
+            color: 'red',
+            weight: 5,
+            opacity: 0.7,
+            dashArray: '10, 10'
+        }).addTo(map);
+
+        // Calculate distance
+        let totalMeters = 0;
+        for (let i = 0; i < latlngs.length - 1; i++) {
+            totalMeters += latlngs[i].distanceTo(latlngs[i+1]);
         }
-        
-        map.getContainer().style.cursor = 'crosshair';
+        oldDistanceEl.textContent = (totalMeters / 1000).toFixed(2);
     } else {
-        drawOldRouteBtn.textContent = "Eski Yolu Çiz (Kırmızı)";
-        drawOldRouteBtn.classList.replace("primary-btn", "secondary-btn");
-        map.getContainer().style.cursor = '';
-        
-        if (customRoutePoints.length > 1) {
-            calculateOldDistance();
-        } else {
-            alert("En az 2 nokta seçmelisiniz.");
-        }
+        oldDistanceEl.textContent = "Kayıtlı yol yok";
     }
 });
 
-map.on('click', function(e) {
-    if (!isDrawingMode) return;
-    
-    customRoutePoints.push(e.latlng);
-    
-    if (customRouteLine) {
-        map.removeLayer(customRouteLine);
-    }
-    
-    customRouteLine = L.polyline(customRoutePoints, {
-        color: 'red',
-        weight: 5,
-        opacity: 0.7,
-        dashArray: '10, 10' // Make it look like an old path
-    }).addTo(map);
-});
-
-function calculateOldDistance() {
-    let totalMeters = 0;
-    for (let i = 0; i < customRoutePoints.length - 1; i++) {
-        totalMeters += customRoutePoints[i].distanceTo(customRoutePoints[i+1]);
-    }
-    
-    const distanceKm = (totalMeters / 1000).toFixed(2);
-    resultsPanel.style.display = 'block';
-    oldDistanceEl.textContent = distanceKm;
-}
-
-// Initial Load
-loadData();
+// Start
+initApp();
