@@ -13,6 +13,14 @@ let markers = [];
 let routingControl = null;
 let savedOldRouteLine = null;
 
+// Özel ikon oluşturma (Resimli köyler için)
+const photoIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/10422/10422409.png', // Harita üstü foto ikon simgesi
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+});
+
 const startSelect = document.getElementById('startPoint');
 const endSelect = document.getElementById('endPoint');
 const detailBtn = document.getElementById('detailBtn');
@@ -53,7 +61,8 @@ function populateDropdowns() {
     startSelect.innerHTML = '<option value="">Seçiniz...</option>';
     endSelect.innerHTML = '<option value="">Seçiniz...</option>';
     
-    places.forEach(place => {
+    const sortedPlaces = [...places].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+    sortedPlaces.forEach(place => {
         const option1 = document.createElement('option');
         option1.value = place.id;
         option1.textContent = place.name;
@@ -67,21 +76,79 @@ function populateDropdowns() {
     });
 }
 
-function addMarkers() {
+function addMarkers(filterIds = []) {
     markers.forEach(m => map.removeLayer(m));
     markers = [];
     
+    // Yalnızca seçili yerleşim yeri varsa haritada göster
+    if (filterIds.length === 0) return;
+    
     places.forEach(place => {
-        const marker = L.marker([place.lat, place.lng]).addTo(map);
-        marker.bindTooltip(place.name, { permanent: false, direction: 'top' });
+        // Eğer bu yerin id'si filtrede yoksa atla
+        if (!filterIds.includes(place.id)) {
+            return;
+        }
+
+        // Resmi varsa özel ikon kullan
+        const markerOptions = {};
+        if (place.images && place.images.length > 0) {
+            markerOptions.icon = photoIcon;
+        }
+
+        const marker = L.marker([place.lat, place.lng], markerOptions).addTo(map);
+        
+        // Eğer resim varsa tooltip'e küçük bir fotoğraf simgesi ekle
+        let tooltipText = place.name;
+        if (place.images && place.images.length > 0) {
+            tooltipText += ` 🖼️ (${place.images.length})`;
+        }
+        marker.bindTooltip(tooltipText, { permanent: false, direction: 'top' });
         
         marker.on('click', () => {
-            showModal(place.name, `<p>${place.info}</p>`);
+            // Modal'da resimleri oluştur
+            let imagesHtml = '';
+            if (place.images && place.images.length > 0) {
+                imagesHtml = '<div class="gallery-container">';
+                place.images.forEach(imgUrl => {
+                    imagesHtml += `<img src="${imgUrl}" class="gallery-thumbnail" onclick="enlargeImage(this.src)" alt="${place.name} Resmi">`;
+                });
+                imagesHtml += '</div>';
+            }
+            showModal(place.name, `<p>${place.info}</p>${imagesHtml}`);
         });
         
         markers.push(marker);
     });
 }
+
+// Büyütülmüş resim için fonksiyon
+window.enlargeImage = function(src) {
+    const enlargedContainer = document.createElement('div');
+    enlargedContainer.className = 'enlarged-image-overlay';
+    enlargedContainer.innerHTML = `<img src="${src}" class="enlarged-image"><span class="close-enlarged">&times;</span>`;
+    enlargedContainer.onclick = () => document.body.removeChild(enlargedContainer);
+    document.body.appendChild(enlargedContainer);
+};
+
+// Açılır kutu değişimlerinde haritayı filtrele
+function updateMapVisibility() {
+    const startId = parseInt(startSelect.value);
+    const endId = parseInt(endSelect.value);
+    
+    let filterIds = [];
+    if (startId && endId && startId !== endId) {
+        filterIds = [startId, endId];
+    } else if (startId) {
+        filterIds = [startId];
+    } else if (endId) {
+        filterIds = [endId];
+    }
+    
+    addMarkers(filterIds);
+}
+
+startSelect.addEventListener('change', updateMapVisibility);
+endSelect.addEventListener('change', updateMapVisibility);
 
 // Show Detailed Info for Selected Dropdown Items
 detailBtn.addEventListener('click', () => {
@@ -117,12 +184,25 @@ detailBtn.addEventListener('click', () => {
         `;
     }
 
+    // Resim Galerisi Oluşturma Fonksiyonu
+    function getGalleryHtml(place) {
+        if (!place.images || place.images.length === 0) return '';
+        let html = '<div class="gallery-container">';
+        place.images.forEach(imgUrl => {
+            html += `<img src="${imgUrl}" class="gallery-thumbnail" onclick="enlargeImage(this.src)" alt="${place.name} Resmi">`;
+        });
+        html += '</div>';
+        return html;
+    }
+
     let content = `
         <h3>${startPlace.name}</h3>
         <p>${startPlace.info}</p>
+        ${getGalleryHtml(startPlace)}
         <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ccc;">
         <h3>${endPlace.name}</h3>
         <p>${endPlace.info}</p>
+        ${getGalleryHtml(endPlace)}
         ${routeInfoHtml}
     `;
     

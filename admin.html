@@ -34,16 +34,25 @@
                 <input type="text" id="placeName">
             </div>
             <div class="input-group">
-                <label>Enlem (Latitude)</label>
+                <label>Enlem (Latitude) <small style="color:var(--primary-color); font-weight:normal;">- İsterseniz haritadan tıklayarak seçebilirsiniz</small></label>
                 <input type="text" id="placeLat">
             </div>
             <div class="input-group">
-                <label>Boylam (Longitude)</label>
+                <label>Boylam (Longitude) <small style="color:var(--primary-color); font-weight:normal;">- İsterseniz haritadan tıklayarak seçebilirsiniz</small></label>
                 <input type="text" id="placeLng">
             </div>
             <div class="input-group">
                 <label>Detaylı Bilgi</label>
                 <textarea id="placeInfo" rows="4"></textarea>
+            </div>
+            <div class="input-group">
+                <label>Mevcut Fotoğraflar (Silmek için sağ üstteki X'e basın)</label>
+                <div id="existingImagesGallery" class="gallery-container"></div>
+            </div>
+            <div class="input-group">
+                <label>Fotoğraf Ekle (Çoklu Seçebilirsiniz)</label>
+                <input type="file" id="placeImages" multiple accept="image/*">
+                <small style="color:#666;">Not: Seçtiğiniz resimlerin 'resimler' klasörü içerisinde olduğuna emin olun.</small>
             </div>
             <button id="savePlaceBtn" class="primary-btn">Güncelle / Kaydet</button>
 

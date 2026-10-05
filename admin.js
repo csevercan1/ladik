@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let customRoutePoints = [];
     let customRouteLine = null;
     let tempPlaces = [];
+    let tempClickMarker = null; // Tıklanan yeri göstermek için
+    let imagesToDelete = []; // Silinmesi istenen resimlerin listesi
 
     // Login
     loginBtn.addEventListener('click', () => {
@@ -59,6 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Just updating coordinates when clicking map (if form is open)
                     placeLat.value = e.latlng.lat.toFixed(4);
                     placeLng.value = e.latlng.lng.toFixed(4);
+                    
+                    // Görsel olarak tıklanan yeri işaretle
+                    if (tempClickMarker) adminMap.removeLayer(tempClickMarker);
+                    tempClickMarker = L.marker(e.latlng).addTo(adminMap);
+                    tempClickMarker.bindTooltip("Seçilen Konum").openTooltip();
                 }
             });
         }
@@ -70,18 +77,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadPlacesList() {
         placesList.innerHTML = '';
-        tempPlaces.forEach(place => {
+        const sortedPlaces = [...tempPlaces].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+        sortedPlaces.forEach(place => {
             const li = document.createElement('li');
             li.innerHTML = `
                 <div>
                     <strong>${place.name}</strong><br>
                     <small>Koord: ${place.lat}, ${place.lng}</small>
                 </div>
-                <button class="primary-btn" style="width:auto; padding:0.4rem 0.8rem; margin-bottom:0;" onclick="editPlace(${place.id})">Düzenle</button>
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="primary-btn" style="width:auto; padding:0.4rem 0.8rem; margin-bottom:0;" onclick="editPlace(${place.id})">Düzenle</button>
+                    <button class="delete-btn" style="width:auto; padding:0.4rem 0.8rem; margin-bottom:0;" onclick="deletePlace(${place.id})">Sil</button>
+                </div>
             `;
             placesList.appendChild(li);
         });
     }
+
+    window.deletePlace = async function(id) {
+        const p = tempPlaces.find(x => x.id === id);
+        if (p) {
+            if (confirm(`Uyarı: ${p.name} köyünün tüm bilgileri ve resmi silinecek. Emin misiniz?`)) {
+                
+                // Resimleri fiziksel olarak klasörden sil
+                if (p.images && p.images.length > 0) {
+                    try {
+                        await fetch('/delete_images', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ images: p.images })
+                        });
+                    } catch(err) {
+                        console.warn("Sunucudan resim silinirken hata:", err);
+                    }
+                }
+                
+                tempPlaces = tempPlaces.filter(x => x.id !== id);
+                savePlaces(tempPlaces);
+                loadPlacesList();
+                populateRouteDropdowns();
+                addMarkersToMap();
+                alert(`${p.name} başarıyla silindi.`);
+            }
+        }
+    };
 
     window.editPlace = function(id) {
         const p = tempPlaces.find(x => x.id === id);
@@ -92,27 +131,118 @@ document.addEventListener('DOMContentLoaded', () => {
             placeLng.value = p.lng;
             placeInfo.value = p.info;
             adminMap.setView([p.lat, p.lng], 15);
+            
+            if (tempClickMarker) adminMap.removeLayer(tempClickMarker);
+            tempClickMarker = L.marker([p.lat, p.lng]).addTo(adminMap);
+            
+            // Resimleri göster
+            const gallery = document.getElementById('existingImagesGallery');
+            gallery.innerHTML = '';
+            imagesToDelete = []; // Her düzenlemede sıfırla
+            
+            if (p.images && p.images.length > 0) {
+                p.images.forEach(imgUrl => {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.style.position = 'relative';
+                    imgDiv.style.display = 'inline-block';
+                    imgDiv.innerHTML = `
+                        <img src="${imgUrl}" class="gallery-thumbnail">
+                        <span class="delete-img-btn" onclick="markImageForDeletion('${imgUrl}', this)">&times;</span>
+                    `;
+                    gallery.appendChild(imgDiv);
+                });
+            }
         }
     };
 
-    saveBtn.addEventListener('click', () => {
+    window.markImageForDeletion = function(url, btnElement) {
+        if (confirm("Bu resmi silmek istediğinizden emin misiniz? (Güncelle / Kaydet butonuna bastığınızda kalıcı olarak silinecektir)")) {
+            imagesToDelete.push(url);
+            btnElement.parentElement.remove();
+        }
+    };
+
+    saveBtn.addEventListener('click', async () => {
         if (!placeName.value) return alert("Yerleşim Yeri Adı zorunludur.");
         
         const id = parseInt(placeId.value) || Date.now();
         const pIndex = tempPlaces.findIndex(x => x.id === id);
+        
+        // Yeni resimleri al
+        const fileInput = document.getElementById('placeImages');
+        let newImages = [];
+        
+        // Eski resimleri korumak veya üzerine yazmak
+        let existingImages = [];
+        if (pIndex > -1 && tempPlaces[pIndex].images) {
+            existingImages = tempPlaces[pIndex].images.filter(img => !imagesToDelete.includes(img));
+        }
+
+        if (fileInput.files.length > 0) {
+            saveBtn.textContent = "Resimler Yükleniyor...";
+            saveBtn.disabled = true;
+            
+            try {
+                // Dosyaları Base64'e çevir
+                const imagesData = await Promise.all(Array.from(fileInput.files).map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve({ name: file.name, data: e.target.result });
+                        reader.readAsDataURL(file);
+                    });
+                }));
+
+                // Python sunucusuna gönder (resimler klasörüne kaydetmesi için)
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ place_id: id, images: imagesData })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    newImages = result.files; // Sunucunun verdiği yeni dosya isimleri (örn: resimler/1234_0.jpg)
+                } else {
+                    alert("Resim yükleme hatası: Sunucu çalışmıyor olabilir.");
+                }
+            } catch (err) {
+                alert("Resim yüklenemedi! Siteyi http://localhost:8000 adresinden açtığınıza ve server.py dosyasını çalıştırdığınıza emin olun.");
+            }
+            
+            saveBtn.textContent = "Güncelle / Kaydet";
+            saveBtn.disabled = false;
+        }
+        
+        // Eğer yeni resim eklendiyse öncekilerle birleştir
+        const finalImages = newImages.length > 0 ? [...new Set([...existingImages, ...newImages])] : existingImages;
         
         const updatedPlace = {
             id: id,
             name: placeName.value,
             lat: parseFloat(placeLat.value || 40.9167),
             lng: parseFloat(placeLng.value || 35.8833),
-            info: placeInfo.value
+            info: placeInfo.value,
+            images: finalImages
         };
 
         if (pIndex > -1) {
             tempPlaces[pIndex] = updatedPlace;
         } else {
             tempPlaces.push(updatedPlace);
+        }
+
+        // Eğer silinen eski resimler varsa sunucudan da tamamen sil
+        if (imagesToDelete.length > 0) {
+            try {
+                fetch('/delete_images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ images: imagesToDelete })
+                });
+            } catch (e) {
+                console.warn("Sunucudan resim silinirken hata:", e);
+            }
+            imagesToDelete = [];
         }
 
         savePlaces(tempPlaces);
@@ -127,12 +257,19 @@ document.addEventListener('DOMContentLoaded', () => {
         placeLat.value = '';
         placeLng.value = '';
         placeInfo.value = '';
+        document.getElementById('placeImages').value = '';
+        document.getElementById('existingImagesGallery').innerHTML = '';
+        if (tempClickMarker) {
+            adminMap.removeLayer(tempClickMarker);
+            tempClickMarker = null;
+        }
     });
 
     function populateRouteDropdowns() {
         startSelect.innerHTML = '<option value="">Seçiniz...</option>';
         endSelect.innerHTML = '<option value="">Seçiniz...</option>';
-        tempPlaces.forEach(place => {
+        const sortedPlaces = [...tempPlaces].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+        sortedPlaces.forEach(place => {
             const opt1 = new Option(place.name, place.id);
             const opt2 = new Option(place.name, place.id);
             startSelect.add(opt1);
@@ -143,12 +280,28 @@ document.addEventListener('DOMContentLoaded', () => {
     function addMarkersToMap() {
         markers.forEach(m => adminMap.removeLayer(m));
         markers = [];
+        
+        const startId = parseInt(startSelect.value);
+        const endId = parseInt(endSelect.value);
+        
+        let filterIds = [];
+        if (startId) filterIds.push(startId);
+        if (endId && startId !== endId) filterIds.push(endId);
+        
+        // Sadece açılır menüden işaretlediğim köylere işaretleme ikonu koyulsun
+        if (filterIds.length === 0) return; 
+
         tempPlaces.forEach(place => {
-            const m = L.marker([place.lat, place.lng]).addTo(adminMap);
-            m.bindTooltip(place.name);
-            markers.push(m);
+            if (filterIds.includes(place.id)) {
+                const m = L.marker([place.lat, place.lng]).addTo(adminMap);
+                m.bindTooltip(place.name);
+                markers.push(m);
+            }
         });
     }
+
+    startSelect.addEventListener('change', addMarkersToMap);
+    endSelect.addEventListener('change', addMarkersToMap);
 
     // DRAW ROUTE LOGIC
     drawOldRouteBtn.addEventListener('click', () => {
