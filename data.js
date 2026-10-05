@@ -61,7 +61,9 @@ const ladikMahalleleri = [
         "lat": 40.99067,
         "lng": 35.87261,
         "info": "Ahmet Saray mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/8_1791215719282_0.png"
+        ]
     },
     {
         "id": 9,
