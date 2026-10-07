@@ -5,7 +5,9 @@ const ladikMahalleleri = [
         "lat": 40.93365,
         "lng": 35.80871,
         "info": "Gürün mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/1_1791360126025_0.jpg"
+        ]
     },
     {
         "id": 2,
@@ -13,7 +15,9 @@ const ladikMahalleleri = [
         "lat": 40.94827,
         "lng": 35.80688,
         "info": "Ayvalı Sokağı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/2_1791360065111_0.jpg"
+        ]
     },
     {
         "id": 3,
@@ -29,7 +33,9 @@ const ladikMahalleleri = [
         "lat": 40.97477,
         "lng": 35.78749,
         "info": "Hamamayağı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/4_1791360135836_0.jpg"
+        ]
     },
     {
         "id": 5,
@@ -37,7 +43,9 @@ const ladikMahalleleri = [
         "lat": 40.9587,
         "lng": 35.8388,
         "info": "Ayvalı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/5_1791360055418_0.jpg"
+        ]
     },
     {
         "id": 6,
@@ -45,7 +53,9 @@ const ladikMahalleleri = [
         "lat": 40.973,
         "lng": 35.84604,
         "info": "Başlamış mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/6_1791360077230_0.jpg"
+        ]
     },
     {
         "id": 7,
@@ -53,16 +63,18 @@ const ladikMahalleleri = [
         "lat": 40.98964,
         "lng": 35.841,
         "info": "Çadırkaya mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/7_1791360110667_0.jpg"
+        ]
     },
     {
         "id": 8,
         "name": "Ahmet Saray",
         "lat": 40.99067,
         "lng": 35.87261,
-        "info": "Ahmet Saray mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Ahmet Saray ",
         "images": [
-            "resimler/8_1791215719282_0.png"
+            "resimler/8_1791360018488_0.jpg"
         ]
     },
     {
@@ -71,7 +83,9 @@ const ladikMahalleleri = [
         "lat": 40.96994,
         "lng": 35.86432,
         "info": "Alayurt mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/9_1791360026416_0.jpg"
+        ]
     },
     {
         "id": 10,
@@ -79,7 +93,9 @@ const ladikMahalleleri = [
         "lat": 40.99379,
         "lng": 35.9011,
         "info": "Salur mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/10_1791360229421_0.jpg"
+        ]
     },
     {
         "id": 11,
@@ -87,7 +103,9 @@ const ladikMahalleleri = [
         "lat": 40.9656,
         "lng": 35.90055,
         "info": "İbi mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/11_1791360160362_0.jpg"
+        ]
     },
     {
         "id": 12,
@@ -103,7 +121,9 @@ const ladikMahalleleri = [
         "lat": 40.93625,
         "lng": 35.93579,
         "info": "Hasırcı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/13_1791360151870_0.jpg"
+        ]
     },
     {
         "id": 14,
@@ -119,7 +139,9 @@ const ladikMahalleleri = [
         "lat": 40.92656,
         "lng": 35.96316,
         "info": "Tatlıcak mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/15_1791360215438_0.png"
+        ]
     },
     {
         "id": 16,
@@ -135,7 +157,9 @@ const ladikMahalleleri = [
         "lat": 40.90702,
         "lng": 36.07633,
         "info": "Kabacagöz mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/17_1791360169456_0.jpg"
+        ]
     },
     {
         "id": 18,
@@ -143,7 +167,9 @@ const ladikMahalleleri = [
         "lat": 40.92226,
         "lng": 36.06073,
         "info": "Şıhlı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/18_1791360208701_0.jpg"
+        ]
     },
     {
         "id": 19,
@@ -151,7 +177,9 @@ const ladikMahalleleri = [
         "lat": 40.92136,
         "lng": 36.10297,
         "info": "Daldere mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/19_1791360119353_0.jpg"
+        ]
     },
     {
         "id": 20,
@@ -159,7 +187,9 @@ const ladikMahalleleri = [
         "lat": 40.91939,
         "lng": 36.13465,
         "info": "Büyük Alan mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/20_1791360090437_0.jpg"
+        ]
     },
     {
         "id": 21,
@@ -175,7 +205,9 @@ const ladikMahalleleri = [
         "lat": 40.88465,
         "lng": 36.03914,
         "info": "Cüce mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/22_1791360099549_0.jpg"
+        ]
     },
     {
         "id": 23,
@@ -183,7 +215,9 @@ const ladikMahalleleri = [
         "lat": 40.89713,
         "lng": 35.99094,
         "info": "Hamitköy mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/23_1791360143414_0.jpg"
+        ]
     },
     {
         "id": 24,
@@ -207,7 +241,9 @@ const ladikMahalleleri = [
         "lat": 40.90615,
         "lng": 35.89959,
         "info": "Saray Mahallesi mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
-        "images": []
+        "images": [
+            "resimler/26_1791360222238_0.jpg"
+        ]
     }
 ];
 const ladikRoutes = [];

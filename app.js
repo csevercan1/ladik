@@ -13,13 +13,7 @@ let markers = [];
 let routingControl = null;
 let savedOldRouteLine = null;
 
-// Özel ikon oluşturma (Resimli köyler için)
-const photoIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/10422/10422409.png', // Harita üstü foto ikon simgesi
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32]
-});
+// Özel ikon oluşturma (Resimli köyler için iptal edildi, yerine dinamik resim kullanılacak)
 
 const startSelect = document.getElementById('startPoint');
 const endSelect = document.getElementById('endPoint');
@@ -80,19 +74,21 @@ function addMarkers(filterIds = []) {
     markers.forEach(m => map.removeLayer(m));
     markers = [];
     
-    // Yalnızca seçili yerleşim yeri varsa haritada göster
-    if (filterIds.length === 0) return;
-    
     places.forEach(place => {
-        // Eğer bu yerin id'si filtrede yoksa atla
-        if (!filterIds.includes(place.id)) {
+        // Eğer filtre listesi doluysa ve bu yerin id'si filtrede yoksa atla
+        if (filterIds.length > 0 && !filterIds.includes(place.id)) {
             return;
         }
 
         // Resmi varsa özel ikon kullan
         const markerOptions = {};
         if (place.images && place.images.length > 0) {
-            markerOptions.icon = photoIcon;
+            markerOptions.icon = L.divIcon({
+                className: 'custom-photo-marker',
+                html: `<div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.5); background-color: #fff;"><img src="${place.images[0]}" style="width: 100%; height: 100%; object-fit: cover;"></div>`,
+                iconSize: [40, 40],
+                iconAnchor: [20, 40]
+            });
         }
 
         const marker = L.marker([place.lat, place.lng], markerOptions).addTo(map);
@@ -105,29 +101,96 @@ function addMarkers(filterIds = []) {
         marker.bindTooltip(tooltipText, { permanent: false, direction: 'top' });
         
         marker.on('click', () => {
-            // Modal'da resimleri oluştur
-            let imagesHtml = '';
             if (place.images && place.images.length > 0) {
-                imagesHtml = '<div class="gallery-container">';
-                place.images.forEach(imgUrl => {
-                    imagesHtml += `<img src="${imgUrl}" class="gallery-thumbnail" onclick="enlargeImage(this.src)" alt="${place.name} Resmi">`;
-                });
-                imagesHtml += '</div>';
+                const imagesStr = encodeURIComponent(JSON.stringify(place.images));
+                const infoStr = encodeURIComponent(place.info || '');
+                window.openGallery(imagesStr, 0, place.name, infoStr);
+            } else {
+                showModal(place.name, `<p>${place.info}</p>`);
             }
-            showModal(place.name, `<p>${place.info}</p>${imagesHtml}`);
         });
         
         markers.push(marker);
     });
 }
 
-// Büyütülmüş resim için fonksiyon
-window.enlargeImage = function(src) {
+// Büyütülmüş resim galerisi için fonksiyon
+window.openGallery = function(imagesStr, startIndex, placeName = '', placeInfoStr = '') {
+    const images = JSON.parse(decodeURIComponent(imagesStr));
+    const placeInfo = placeInfoStr ? decodeURIComponent(placeInfoStr) : '';
+    let currentIndex = startIndex;
+
     const enlargedContainer = document.createElement('div');
     enlargedContainer.className = 'enlarged-image-overlay';
-    enlargedContainer.innerHTML = `<img src="${src}" class="enlarged-image"><span class="close-enlarged">&times;</span>`;
-    enlargedContainer.onclick = () => document.body.removeChild(enlargedContainer);
+    
+    function renderGallery() {
+        let navLeft = '';
+        let navRight = '';
+        if (images.length > 1) {
+            navLeft = `<button class="gallery-nav prev-btn" style="background:none; color:white; border:none; cursor:pointer; font-size:40px; padding:0 20px; outline:none; transition:transform 0.2s;">&#10094;</button>`;
+            navRight = `<button class="gallery-nav next-btn" style="background:none; color:white; border:none; cursor:pointer; font-size:40px; padding:0 20px; outline:none; transition:transform 0.2s;">&#10095;</button>`;
+        }
+        
+        const counterHtml = images.length > 1 ? `<div style="font-size:14px; color:#ccc; margin-bottom:5px;">${currentIndex + 1} / ${images.length}</div>` : '';
+
+        let infoHtml = '';
+        if (placeName || placeInfo) {
+             infoHtml = `
+                ${placeName ? `<h2 style="margin:0 0 5px 0; font-size:22px;">${placeName}</h2>` : ''}
+                ${(placeInfo && placeInfo !== placeName) ? `<p style="margin:0; font-size:14px; max-width:800px; display:inline-block; line-height:1.4;">${placeInfo}</p>` : ''}
+             `;
+        }
+
+        const bottomBarHtml = `
+            <div style="display:flex; flex-direction:row; justify-content:center; align-items:center; width:100%; background:rgba(0,0,0,0.85); padding:15px; flex-shrink:0;">
+                ${navLeft}
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; text-align:center; color:white;">
+                    ${counterHtml}
+                    ${infoHtml}
+                </div>
+                ${navRight}
+            </div>
+        `;
+        
+        enlargedContainer.innerHTML = `
+            <span class="close-enlarged" style="position:absolute; top:20px; right:30px; font-size:40px; color:white; cursor:pointer; z-index:1001;">&times;</span>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; width:100%; overflow:hidden; padding:20px;">
+                <img src="${images[currentIndex]}" class="enlarged-image" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+            </div>
+            ${bottomBarHtml}
+        `;
+        enlargedContainer.style.display = 'flex';
+        enlargedContainer.style.flexDirection = 'column';
+        enlargedContainer.style.justifyContent = 'space-between';
+        
+        enlargedContainer.querySelector('.close-enlarged').onclick = (e) => {
+            e.stopPropagation();
+            document.body.removeChild(enlargedContainer);
+        };
+        
+        if (images.length > 1) {
+            enlargedContainer.querySelector('.prev-btn').onclick = (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+                renderGallery();
+            };
+            enlargedContainer.querySelector('.next-btn').onclick = (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+                renderGallery();
+            };
+        }
+    }
+    
+    // Clicking on background closes it
+    enlargedContainer.onclick = (e) => {
+        if (e.target === enlargedContainer) {
+            document.body.removeChild(enlargedContainer);
+        }
+    };
+    
     document.body.appendChild(enlargedContainer);
+    renderGallery();
 };
 
 // Açılır kutu değişimlerinde haritayı filtrele
@@ -188,8 +251,9 @@ detailBtn.addEventListener('click', () => {
     function getGalleryHtml(place) {
         if (!place.images || place.images.length === 0) return '';
         let html = '<div class="gallery-container">';
-        place.images.forEach(imgUrl => {
-            html += `<img src="${imgUrl}" class="gallery-thumbnail" onclick="enlargeImage(this.src)" alt="${place.name} Resmi">`;
+        const imagesStr = encodeURIComponent(JSON.stringify(place.images));
+        place.images.forEach((imgUrl, index) => {
+            html += `<img src="${imgUrl}" class="gallery-thumbnail" onclick="openGallery('${imagesStr}', ${index})" alt="${place.name} Resmi">`;
         });
         html += '</div>';
         return html;
@@ -245,7 +309,8 @@ calcRouteBtn.addEventListener('click', () => {
         },
         routeWhileDragging: false,
         addWaypoints: false,
-        show: false
+        show: false,
+        createMarker: function() { return null; }
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
