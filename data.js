@@ -4,7 +4,7 @@ const ladikMahalleleri = [
         "name": "Gürün",
         "lat": 40.93365,
         "lng": 35.80871,
-        "info": "Gürün mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Gürün mahallesi",
         "images": [
             "resimler/1_1791360126025_0.jpg"
         ]
@@ -14,7 +14,7 @@ const ladikMahalleleri = [
         "name": "Ayvalı Sokağı",
         "lat": 40.94827,
         "lng": 35.80688,
-        "info": "Ayvalı Sokağı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Ayvalı Sokağı mahallesi",
         "images": [
             "resimler/2_1791360065111_0.jpg"
         ]
@@ -24,7 +24,7 @@ const ladikMahalleleri = [
         "name": "Kocapınar",
         "lat": 40.953,
         "lng": 35.779,
-        "info": "Kocapınar mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Kocapınar mahallesi",
         "images": []
     },
     {
@@ -32,7 +32,7 @@ const ladikMahalleleri = [
         "name": "Hamamayağı",
         "lat": 40.97477,
         "lng": 35.78749,
-        "info": "Hamamayağı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Hamamayağı mahallesi",
         "images": [
             "resimler/4_1791360135836_0.jpg"
         ]
@@ -42,7 +42,7 @@ const ladikMahalleleri = [
         "name": "Ayvalı",
         "lat": 40.9587,
         "lng": 35.8388,
-        "info": "Ayvalı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Ayvalı mahallesi",
         "images": [
             "resimler/5_1791360055418_0.jpg"
         ]
@@ -52,7 +52,7 @@ const ladikMahalleleri = [
         "name": "Başlamış",
         "lat": 40.973,
         "lng": 35.84604,
-        "info": "Başlamış mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Başlamış mahallesi",
         "images": [
             "resimler/6_1791360077230_0.jpg"
         ]
@@ -62,7 +62,7 @@ const ladikMahalleleri = [
         "name": "Çadırkaya",
         "lat": 40.98964,
         "lng": 35.841,
-        "info": "Çadırkaya mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Çadırkaya mahallesi",
         "images": [
             "resimler/7_1791360110667_0.jpg"
         ]
@@ -82,7 +82,7 @@ const ladikMahalleleri = [
         "name": "Alayurt",
         "lat": 40.96994,
         "lng": 35.86432,
-        "info": "Alayurt mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Alayurt mahallesi",
         "images": [
             "resimler/9_1791360026416_0.jpg"
         ]
@@ -92,7 +92,7 @@ const ladikMahalleleri = [
         "name": "Salur",
         "lat": 40.99379,
         "lng": 35.9011,
-        "info": "Salur mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Salur mahallesi",
         "images": [
             "resimler/10_1791360229421_0.jpg"
         ]
@@ -102,7 +102,7 @@ const ladikMahalleleri = [
         "name": "İbi",
         "lat": 40.9656,
         "lng": 35.90055,
-        "info": "İbi mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "İbi mahallesi",
         "images": [
             "resimler/11_1791360160362_0.jpg"
         ]
@@ -112,7 +112,7 @@ const ladikMahalleleri = [
         "name": "Arslantaş",
         "lat": 40.95706,
         "lng": 35.88626,
-        "info": "Arslantaş mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Arslantaş mahallesi",
         "images": []
     },
     {
@@ -120,7 +120,7 @@ const ladikMahalleleri = [
         "name": "Hasırcı",
         "lat": 40.93625,
         "lng": 35.93579,
-        "info": "Hasırcı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Hasırcı mahallesi",
         "images": [
             "resimler/13_1791360151870_0.jpg"
         ]
@@ -130,7 +130,7 @@ const ladikMahalleleri = [
         "name": "Kıranboğaz",
         "lat": 40.91912,
         "lng": 35.9329,
-        "info": "Kıranboğaz mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Kıranboğaz mahallesi",
         "images": []
     },
     {
@@ -138,7 +138,7 @@ const ladikMahalleleri = [
         "name": "Tatlıcak",
         "lat": 40.92656,
         "lng": 35.96316,
-        "info": "Tatlıcak mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Tatlıcak mahallesi",
         "images": [
             "resimler/15_1791360215438_0.png"
         ]
@@ -148,7 +148,7 @@ const ladikMahalleleri = [
         "name": "Mazlumoğlu",
         "lat": 40.91823,
         "lng": 36.03042,
-        "info": "Mazlumoğlu mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Mazlumoğlu mahallesi",
         "images": []
     },
     {
@@ -156,7 +156,7 @@ const ladikMahalleleri = [
         "name": "Kabacagöz",
         "lat": 40.90702,
         "lng": 36.07633,
-        "info": "Kabacagöz mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Kabacagöz mahallesi",
         "images": [
             "resimler/17_1791360169456_0.jpg"
         ]
@@ -166,7 +166,7 @@ const ladikMahalleleri = [
         "name": "Şıhlı",
         "lat": 40.92226,
         "lng": 36.06073,
-        "info": "Şıhlı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Şıhlı mahallesi",
         "images": [
             "resimler/18_1791360208701_0.jpg"
         ]
@@ -176,7 +176,7 @@ const ladikMahalleleri = [
         "name": "Daldere",
         "lat": 40.92136,
         "lng": 36.10297,
-        "info": "Daldere mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Daldere mahallesi",
         "images": [
             "resimler/19_1791360119353_0.jpg"
         ]
@@ -186,7 +186,7 @@ const ladikMahalleleri = [
         "name": "Büyük Alan",
         "lat": 40.91939,
         "lng": 36.13465,
-        "info": "Büyük Alan mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Büyük Alan mahallesi",
         "images": [
             "resimler/20_1791360090437_0.jpg"
         ]
@@ -196,7 +196,7 @@ const ladikMahalleleri = [
         "name": "Küpecik",
         "lat": 40.8814,
         "lng": 36.04918,
-        "info": "Küpecik mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Küpecik mahallesi",
         "images": []
     },
     {
@@ -204,7 +204,7 @@ const ladikMahalleleri = [
         "name": "Cüce",
         "lat": 40.88465,
         "lng": 36.03914,
-        "info": "Cüce mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Cüce mahallesi",
         "images": [
             "resimler/22_1791360099549_0.jpg"
         ]
@@ -214,7 +214,7 @@ const ladikMahalleleri = [
         "name": "Hamitköy",
         "lat": 40.89713,
         "lng": 35.99094,
-        "info": "Hamitköy mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Hamitköy mahallesi",
         "images": [
             "resimler/23_1791360143414_0.jpg"
         ]
@@ -224,7 +224,7 @@ const ladikMahalleleri = [
         "name": "Polat(Bolat)",
         "lat": 40.89869,
         "lng": 35.977195,
-        "info": "Polat(Bolat) mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Polat(Bolat) mahallesi",
         "images": []
     },
     {
@@ -232,7 +232,7 @@ const ladikMahalleleri = [
         "name": "Aşağı Gölyazı",
         "lat": 40.90664,
         "lng": 35.96602,
-        "info": "Aşağı Gölyazı mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Aşağı Gölyazı mahallesi",
         "images": []
     },
     {
@@ -240,7 +240,7 @@ const ladikMahalleleri = [
         "name": "Saray Mahallesi",
         "lat": 40.90615,
         "lng": 35.89959,
-        "info": "Saray Mahallesi mahallesi/köyü hakkında detaylı bilgileri yönetici panelinden düzenleyebilirsiniz.",
+        "info": "Saray Mahallesi mahallesi",
         "images": [
             "resimler/26_1791360222238_0.jpg"
         ]
